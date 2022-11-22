@@ -1,0 +1,20 @@
+.nav {
+    grid-area: nav;
+}
+
+.ul {
+    list-style-type: none;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.item {
+    text-decoration: none;
+    color: black;
+}
+
+.item .active {
+    color: gold;
+}

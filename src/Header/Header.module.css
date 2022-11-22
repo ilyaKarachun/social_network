@@ -1,0 +1,15 @@
+.main {
+    grid-area: header;
+    height: 100px;
+    width: 100%;
+    background-color: cornflowerblue;
+    align-items: center;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+}
+.img {
+    width: 50px;
+    height: 50px;
+    padding: 15px;
+    border-radius: 50px;
+}

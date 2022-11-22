@@ -1,0 +1,14 @@
+.content {
+    grid-area: content;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: 0 auto;
+}
+
+.MainImg {
+    height: 200px;
+    width: 800px;
+    margin-top: 25px;
+    border-radius: 25px;
+}
