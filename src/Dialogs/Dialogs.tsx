@@ -1,10 +1,64 @@
-import React from 'react';
+import React, {FC} from 'react';
 import '../App.css';
+import d from "./Dialogs.module.css"
+import {NavLink} from "react-router-dom";
 
-export const Dialogs =() => {
-    return (<div>
+type TDialogItem = {
+    id: number
+    personName: string
+}
 
-    </div>)
+type TMessage = {
+    value: string
+    messageId: number
+}
+
+export const DialogItem: FC<TDialogItem> = ({id, personName}) => {
+    return (
+        <div>
+            <NavLink to={`/dialogs/${id}`} className={d.item}>
+                {personName}
+            </NavLink>
+        </div>
+    )
+}
+
+export const Message: FC<TMessage> = ({value, messageId}) => {
+    return (
+        <div className={d.message} >
+            {value}
+        </div>
+    )
+}
+
+export const Dialogs = () => {
+    const dialogData = [
+        {id: 1, personName: "Ilya"},
+        {id: 2, personName: "Lesha"},
+        {id: 3, personName: "Dasha"},
+        {id: 4, personName: "Sveta"},
+        {id: 5, personName: "Dima"},
+    ]
+
+    const messageData = [
+        {id: 1, message: "Hello! Are u at home?"},
+        {id: 2, message: "I have trouble with my motivation"},
+        {id: 3, message: "Could u gimme advice about work?"},
+    ]
+
+    const dialogTeam = dialogData.map(el => <DialogItem id={el.id} personName={el.personName} key={el.id} />)
+
+    const dialogMessage = messageData.map(el => <Message value={el.message} messageId={el.id}/>)
+
+    return (
+        <div className={d.main}>
+            <div className={d.items}>
+                {dialogTeam}
+            </div>
+            <div className={d.messages}>
+                {dialogMessage}
+            </div>
+        </div>)
 }
 
 
