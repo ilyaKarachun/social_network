@@ -1,18 +1,44 @@
-import React from 'react';
+import React, {ChangeEvent, FormEvent, RefObject, useState} from 'react';
 import {Post} from "./Post/Post";
+
+type TPostData = {
+    id: number
+    message: string
+}
 
 
 export const MyPosts = () => {
-    return <div>
+
+
+    const [postData, setPostData] = useState<TPostData[]>([
+        {id: 1, message: "Winter is coming"},
+        {id: 2, message: "I lost my motivation"},
+    ])
+
+    const [newPostText, setNewPostText] = useState<string>("")
+
+    const addPost = () => {
+        setPostData([...postData, { id: 3, message: newPostText}])
+        setNewPostText("")
+    }
+
+    const updateNewPostText = (e: ChangeEvent<HTMLTextAreaElement>,) => {
+        setNewPostText(e.currentTarget.value)
+    }
+
+    const usersPost = postData.map(el => <Post message={el.message} />)
+    return (
         <div>
             MyPosts
             <div>
-                <textarea></textarea>
-                <button>add post</button>
+                <textarea 
+                    value={newPostText}
+                    onChange={updateNewPostText}
+                />
+                <button onClick={addPost}>add post</button>
             </div>
-           <Post message={"Winter is coming"}/>
-           <Post message={"I tried"}/>
+            {usersPost}
         </div>
-    </div>
+    )
 }
 
