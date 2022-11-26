@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {ChangeEvent, FC, useState} from 'react';
 import '../App.css';
 import d from "./Dialogs.module.css"
 import {NavLink} from "react-router-dom";
@@ -25,7 +25,7 @@ export const DialogItem: FC<TDialogItem> = ({id, personName}) => {
 
 export const Message: FC<TMessage> = ({value, messageId}) => {
     return (
-        <div className={d.message} >
+        <div className={d.message}>
             {value}
         </div>
     )
@@ -46,7 +46,14 @@ export const Dialogs = () => {
         {id: 3, message: "Could u gimme advice about work?"},
     ]
 
-    const dialogTeam = dialogData.map(el => <DialogItem id={el.id} personName={el.personName} key={el.id} />)
+    const [newMessage, setNewMessage] = useState('')
+
+    const newPostText = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        setNewMessage(e.currentTarget.value)
+    }
+
+
+    const dialogTeam = dialogData.map(el => <DialogItem id={el.id} personName={el.personName} key={el.id}/>)
 
     const dialogMessage = messageData.map(el => <Message value={el.message} messageId={el.id}/>)
 
@@ -57,6 +64,12 @@ export const Dialogs = () => {
             </div>
             <div className={d.messages}>
                 {dialogMessage}
+            </div>
+            <div>
+            <textarea
+                onChange={newPostText}
+                value={newMessage}/>
+                <button onClick={() => { alert(newMessage)}}>add post</button>
             </div>
         </div>)
 }
