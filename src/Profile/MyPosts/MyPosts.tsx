@@ -1,5 +1,8 @@
 import React, {ChangeEvent, FormEvent, RefObject, useState} from 'react';
 import {Post} from "./Post/Post";
+import {useDispatch, useSelector} from "react-redux";
+import {addNewTextAC, addPostAC, profileReducer, profileReducerT, TPosts} from "../../redux/profile-reducer";
+import {AppRootStateType} from "../../redux/store";
 
 type TPostData = {
     id: number
@@ -9,30 +12,25 @@ type TPostData = {
 
 export const MyPosts = () => {
 
-
-    const [postData, setPostData] = useState<TPostData[]>([
-        {id: 1, message: "Winter is coming"},
-        {id: 2, message: "I lost my motivation"},
-    ])
-
-    const [newPostText, setNewPostText] = useState<string>("")
+    const postData = useSelector<AppRootStateType, profileReducerT>(state => state.profileReducer)
+    const dispatch = useDispatch()
 
     const addPost = () => {
-        setPostData([...postData, { id: 3, message: newPostText}])
-        setNewPostText("")
+        dispatch(addPostAC(postData.newPostText))
     }
 
     const updateNewPostText = (e: ChangeEvent<HTMLTextAreaElement>,) => {
-        setNewPostText(e.currentTarget.value)
+        dispatch(addNewTextAC(e.currentTarget.value))
     }
 
-    const usersPost = postData.map(el => <Post message={el.message} />)
+    const usersPost = postData.posts.map(el => <Post message={el.message}/>)
+
     return (
         <div>
             MyPosts
             <div>
-                <textarea 
-                    value={newPostText}
+                <textarea
+                    value={postData.newPostText}
                     onChange={updateNewPostText}
                 />
                 <button onClick={addPost}>add post</button>
