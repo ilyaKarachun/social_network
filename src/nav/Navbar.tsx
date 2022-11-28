@@ -20,6 +20,13 @@ export const Navbar = () => {
             >
                 Messages
             </NavLink>
+            <NavLink to={'/users'}
+                     className={n.item}
+                     style={(param) => ({
+                         color: param.isActive ? "darkred" : ""})}
+            >
+                Find friends
+            </NavLink>
             <a href={''}
                className={n.item}
             >

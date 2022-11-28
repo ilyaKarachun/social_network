@@ -2,6 +2,9 @@ import React, {ChangeEvent, FC, useState} from 'react';
 import '../App.css';
 import d from "./Dialogs.module.css"
 import {NavLink} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {AppRootStateType} from "../redux/store";
+import {addNewPostAC, addNewPostTextAC, dialogDataT, messageDataT} from "../redux/dialogs-reducer";
 
 type TDialogItem = {
     id: number
@@ -32,26 +35,40 @@ export const Message: FC<TMessage> = ({value, messageId}) => {
 }
 
 export const Dialogs = () => {
-    const dialogData = [
-        {id: 1, personName: "Ilya"},
-        {id: 2, personName: "Lesha"},
-        {id: 3, personName: "Dasha"},
-        {id: 4, personName: "Sveta"},
-        {id: 5, personName: "Dima"},
-    ]
+    // const dialogData = [
+    //     {id: 1, personName: "Ilya"},
+    //     {id: 2, personName: "Lesha"},
+    //     {id: 3, personName: "Dasha"},
+    //     {id: 4, personName: "Sveta"},
+    //     {id: 5, personName: "Dima"},
+    // ]
 
-    const messageData = [
-        {id: 1, message: "Hello! Are u at home?"},
-        {id: 2, message: "I have trouble with my motivation"},
-        {id: 3, message: "Could u gimme advice about work?"},
-    ]
+    // const messageData = [
+    //     {id: 1, message: "Hello! Are u at home?"},
+    //     {id: 2, message: "I have trouble with my motivation"},
+    //     {id: 3, message: "Could u gimme advice about work?"},
+    // ]
 
-    const [newMessage, setNewMessage] = useState('')
+    // const [newMessage, setNewMessage] = useState('')
+    const newMessage = useSelector<AppRootStateType, string>(
+        state => state.dialogsReducer.newMessage)
+
+    const messageData = useSelector<AppRootStateType, messageDataT[]>(
+        state => state.dialogsReducer.messageData)
+
+    const dialogData = useSelector<AppRootStateType, dialogDataT[]>(
+        state => state.dialogsReducer.dialogData)
+
+    const dispatch = useDispatch()
 
     const newPostText = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        setNewMessage(e.currentTarget.value)
+        dispatch(addNewPostTextAC(e.currentTarget.value))
     }
 
+    const addNewUsersMessage = () => {
+        dispatch(addNewPostAC(newMessage))
+        dispatch(addNewPostTextAC(""))
+    }
 
     const dialogTeam = dialogData.map(el => <DialogItem id={el.id} personName={el.personName} key={el.id}/>)
 
@@ -69,7 +86,7 @@ export const Dialogs = () => {
             <textarea
                 onChange={newPostText}
                 value={newMessage}/>
-                <button onClick={() => { alert(newMessage)}}>add post</button>
+                <button onClick={addNewUsersMessage}>add post</button>
             </div>
         </div>)
 }
