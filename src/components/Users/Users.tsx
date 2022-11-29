@@ -1,7 +1,10 @@
 import React, {FC} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {AppRootStateType} from "../../redux/store";
-import {follow, TUsers} from "../../redux/users-reducer";
+import {follow,  TUsers} from "../../redux/users-reducer";
+import userImg from "../../assets/userImg.png"
+import s from "./user.module.css"
+
 
 export const Users = () => {
     const dispatch = useDispatch()
@@ -10,10 +13,13 @@ export const Users = () => {
         dispatch(follow(usersId))
     }
     const users = useSelector<AppRootStateType, TUsers[]>(state => state.usersReducer)
+
     const usersData = users.map( ( u, i) => <UsersProfile
-        name={u.fullName}
+        name={u.name}
+        status={u.status}
         userId={u.id}
-        follow={u.follow}
+        follow={u.followed}
+        photos={u.photos.small}
         key={i}
         changeFollow={changeFollow}
     />)
@@ -25,7 +31,7 @@ export const Users = () => {
     );
 };
 
-const UsersProfile: FC<usersProfileT> = ({name, follow,changeFollow, userId}) => {
+const UsersProfile: FC<usersProfileT> = ({name, follow,changeFollow, userId,status,photos}) => {
 
     const nameBtn = follow ? "follow" : "unfollow"
 
@@ -33,12 +39,14 @@ const UsersProfile: FC<usersProfileT> = ({name, follow,changeFollow, userId}) =>
         changeFollow(userId)
     }
     const  getUserIdHandler = () => getUserId(userId)
-
+    const urlImg = photos ? photos : userImg
     return (
         <div>
             <div>
                 {name}
             </div>
+            <img className={s.img} src={urlImg}/>
+            <div>{status}</div>
             <button onClick={getUserIdHandler}>
                 {nameBtn}
             </button>
@@ -50,5 +58,7 @@ type usersProfileT = {
     name: string,
     follow: boolean,
     changeFollow: (usersId: number) => void,
-    userId: number
+    userId: number,
+    status: string
+    photos: string
 }
