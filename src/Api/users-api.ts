@@ -14,7 +14,11 @@ const setting = {
     })
 
 export const usersApi =  {
-    getUsers() {
-        return instance.get("users")
+
+    getUsers(currentPage: number, pageSize: number) {
+        return instance.get(`users?page=${currentPage}&count=${pageSize}`)
+    },
+    getUserProfile(userId: number) {
+        return instance.get(`profile/${userId}`)
     }
 }

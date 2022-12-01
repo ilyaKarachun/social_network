@@ -1,13 +1,21 @@
 import {useState} from "react";
 import axios from "axios";
 import {useDispatch} from "react-redux";
+import {Dispatch} from "redux";
+import {usersApi} from "../Api/users-api";
 
-const initialState: any = [
+const initialState: initStateT = {
     // {id: 1, follow: true, name: 'Dasha', city: 'minsk'},
     // {id: 2, follow: true, name: 'Ilya', city: 'minsk'},
     // {id: 3, follow: true, name: 'Sveta', city: 'minsk'},
     // {id: 4, follow: true, name: 'Dima', city: 'minsk'},
-]
+    users: [],
+    pageSize: 20,
+    totalUsersCount: 5,
+    currentPage: 1,
+    loader: false
+}
+
 
 export type TUsers = {
     name: string,
@@ -17,17 +25,48 @@ export type TUsers = {
         large: string
     },
     status: string,
-    followed: boolean
+    followed: boolean,
 }
 
-export const usersReducer = (state = initialState, action: ActionsT): TUsers[]  => {
+type initStateT = {
+    users: TUsers[],
+    pageSize: number,
+    totalUsersCount: number,
+    currentPage: number,
+    loader: boolean,
+}
+
+export const usersReducer = (state = initialState, action: ActionsT): initStateT  => {
     switch (action.type) {
         case "FOLLOW-UNFOLLOW": {
-            return state.map((u: any) => u.id === action.userID ? {...u, followed: !u.follow} : u)
+            return {
+                ...state,
+                users: state.users.map((u) => u.id === action.userID ? {...u, followed: !u.followed} : u)}
         }
         case "SET-USERS": {
-            debugger
-            return state = action.user
+            return {
+                ...state, users: action.user,
+                // totalUsersCount: action.user.
+            }
+        }
+        case "SET-USERS-TOTAL-COUNT": {
+            return {
+                ...state,
+                totalUsersCount: action.usersCount
+            }
+        }
+        case "CHANGE-NUMBER-PAGE": {
+            return {
+                ...state,
+                currentPage: action.page
+            }
+        }
+        case "SET-LOADING": {
+           return {
+               ...state,
+               loader: action.isLoading
+           }
+
         }
         default:
             return state
@@ -35,6 +74,21 @@ export const usersReducer = (state = initialState, action: ActionsT): TUsers[]  
 }
 
 export const follow = (userID: number) => ({type: "FOLLOW-UNFOLLOW", userID} as const);
-export const setUsers = (user: any) => ({type: "SET-USERS", user} as const);
+export const setUsers = (user: TUsers[]) => ({type: "SET-USERS", user} as const);
+export const changeNumberPage = (page: number) => ({type: "CHANGE-NUMBER-PAGE", page} as const);
+export const setUsersTotalCount = (usersCount: number) => ({type: "SET-USERS-TOTAL-COUNT", usersCount} as const);
+export const isLoading = (isLoading: boolean) => ({type: "SET-LOADING", isLoading} as const);
 
-type ActionsT = ReturnType<typeof follow> | ReturnType<typeof setUsers>
+
+
+
+
+
+
+
+type ActionsT = ReturnType<typeof follow>
+    | ReturnType<typeof setUsers>
+    | ReturnType<typeof changeNumberPage>
+    | ReturnType<typeof setUsersTotalCount>
+    | ReturnType<typeof isLoading>
+
