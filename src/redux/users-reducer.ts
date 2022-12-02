@@ -1,14 +1,7 @@
-import {useState} from "react";
-import axios from "axios";
-import {useDispatch} from "react-redux";
 import {Dispatch} from "redux";
 import {usersApi} from "../Api/users-api";
 
 const initialState: initStateT = {
-    // {id: 1, follow: true, name: 'Dasha', city: 'minsk'},
-    // {id: 2, follow: true, name: 'Ilya', city: 'minsk'},
-    // {id: 3, follow: true, name: 'Sveta', city: 'minsk'},
-    // {id: 4, follow: true, name: 'Dima', city: 'minsk'},
     users: [],
     pageSize: 20,
     totalUsersCount: 5,
@@ -73,20 +66,31 @@ export const usersReducer = (state = initialState, action: ActionsT): initStateT
     }
 }
 
-export const follow = (userID: number) => ({type: "FOLLOW-UNFOLLOW", userID} as const);
+export const changeFollow = (userID: number) => ({type: "FOLLOW-UNFOLLOW", userID} as const);
 export const setUsers = (user: TUsers[]) => ({type: "SET-USERS", user} as const);
 export const changeNumberPage = (page: number) => ({type: "CHANGE-NUMBER-PAGE", page} as const);
 export const setUsersTotalCount = (usersCount: number) => ({type: "SET-USERS-TOTAL-COUNT", usersCount} as const);
 export const isLoading = (isLoading: boolean) => ({type: "SET-LOADING", isLoading} as const);
 
+export const followTC = (userId: number) => async (dispatch: Dispatch) => {
+    const res = await usersApi.followUser(userId)
+    debugger
+    console.log("result follow ", res)
+    if (res.data.resultCode === 0) {
+        dispatch(changeFollow(userId))
+    }
+}
 
+export const unfollowTC = (userId: number) => async (dispatch: Dispatch) => {
+    const res = await usersApi.unfollowUser(userId)
+    debugger
+    if (res.data.resultCode === 0) {
+        debugger
+        dispatch(changeFollow(userId))
+    }
+}
 
-
-
-
-
-
-type ActionsT = ReturnType<typeof follow>
+type ActionsT = ReturnType<typeof changeFollow>
     | ReturnType<typeof setUsers>
     | ReturnType<typeof changeNumberPage>
     | ReturnType<typeof setUsersTotalCount>

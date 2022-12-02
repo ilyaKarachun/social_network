@@ -6,6 +6,7 @@
     align-items: center;
     border-bottom-left-radius: 25px;
     border-bottom-right-radius: 25px;
+    justify-content: space-between;
 }
 .img {
     width: 50px;
@@ -13,3 +14,13 @@
     padding: 15px;
     border-radius: 50px;
 }
+
+.loginMain {
+    display: flex;
+    justify-content: space-around;
+    color: white;
+    text-decoration: none;
+}
+
+
+

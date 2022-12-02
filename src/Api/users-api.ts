@@ -20,5 +20,14 @@ export const usersApi =  {
     },
     getUserProfile(userId: number) {
         return instance.get(`profile/${userId}`)
-    }
+    },
+    authMe() {
+        return instance.get(`/auth/me`)
+    },
+    followUser(userId: number) {
+        return instance.post(`follow/${userId}`)
+    },
+    unfollowUser(userId: number) {
+        return instance.delete(`follow/${userId}`)
+    },
 }

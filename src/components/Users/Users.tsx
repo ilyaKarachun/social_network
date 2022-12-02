@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 import { useSelector} from "react-redux";
-import {AppRootStateType, useAppDispatch} from "../../redux/store";
-import {changeNumberPage, follow, TUsers} from "../../redux/users-reducer";
+import {AppRootStateType, useAppDispatch, useAppSelector} from "../../redux/store";
+import {changeNumberPage, followTC, TUsers, unfollowTC} from "../../redux/users-reducer";
 import userImg from "../../assets/userImg.png"
 import s from "./user.module.css"
 import {Loader} from "../Loader/Loader";
@@ -11,10 +11,6 @@ import {getUserIdProfile} from "../../redux/profile-reducer";
 
 export const Users = () => {
     const dispatch = useAppDispatch()
-
-    const changeFollow = (usersId: number) => {
-        dispatch(follow(usersId))
-    }
 
     const users = useSelector<AppRootStateType, TUsers[]>(state => state.usersReducer.users)
     const pageSize = useSelector<AppRootStateType, number>(state => state.usersReducer.pageSize)
@@ -35,7 +31,6 @@ export const Users = () => {
         follow={u.followed}
         photos={u.photos.small}
         key={i}
-        changeFollow={changeFollow}
     />)
 
     const changePage = (pageNumber: number) => {
@@ -55,14 +50,16 @@ export const Users = () => {
     );
 };
 
-const UsersProfile: FC<usersProfileT> = ({name, follow, changeFollow, userId, status, photos}) => {
+const UsersProfile: FC<usersProfileT> = ({name,  userId, follow, status, photos}) => {
     const dispatch = useAppDispatch()
-    const nameBtn = follow ? "follow" : "unfollow"
-
-    const getUserId = (userId: number) => {
-        changeFollow(userId)
+    const followHandler = (usersId: number) => {
+        dispatch(followTC(usersId))
     }
-    const getUserIdHandler = () => getUserId(userId)
+    console.log("follow", follow)
+    const unfollowHandler = (usersId: number) => {
+        dispatch(unfollowTC(usersId))
+    }
+
     const urlImg = photos ? photos : userImg
 
     const redirectUserPage = () => {
@@ -77,9 +74,15 @@ const UsersProfile: FC<usersProfileT> = ({name, follow, changeFollow, userId, st
                 <img alt={"user Avatar"} className={s.img} src={urlImg}/>
             </NavLink>
             <div>{status}</div>
-            <button onClick={getUserIdHandler}>
-                {nameBtn}
+            {follow ?
+                <button onClick={() => unfollowHandler(userId)}>
+                unfollow
             </button>
+                :
+                <button onClick={() => followHandler(userId)}>
+                    follow
+                </button>
+            }
         </div>
     )
 }
@@ -87,7 +90,6 @@ const UsersProfile: FC<usersProfileT> = ({name, follow, changeFollow, userId, st
 type usersProfileT = {
     name: string,
     follow: boolean,
-    changeFollow: (usersId: number) => void,
     userId: number,
     status: string
     photos: string
