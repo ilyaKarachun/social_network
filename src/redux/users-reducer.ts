@@ -27,6 +27,7 @@ type initStateT = {
     totalUsersCount: number,
     currentPage: number,
     loader: boolean,
+
 }
 
 export const usersReducer = (state = initialState, action: ActionsT): initStateT  => {
@@ -73,21 +74,21 @@ export const setUsersTotalCount = (usersCount: number) => ({type: "SET-USERS-TOT
 export const isLoading = (isLoading: boolean) => ({type: "SET-LOADING", isLoading} as const);
 
 export const followTC = (userId: number) => async (dispatch: Dispatch) => {
+    dispatch(isLoading(true))
     const res = await usersApi.followUser(userId)
-    debugger
-    console.log("result follow ", res)
     if (res.data.resultCode === 0) {
         dispatch(changeFollow(userId))
     }
+    dispatch(isLoading(false))
 }
 
 export const unfollowTC = (userId: number) => async (dispatch: Dispatch) => {
+    dispatch(isLoading(true))
     const res = await usersApi.unfollowUser(userId)
-    debugger
     if (res.data.resultCode === 0) {
-        debugger
         dispatch(changeFollow(userId))
     }
+    dispatch(isLoading(false))
 }
 
 type ActionsT = ReturnType<typeof changeFollow>

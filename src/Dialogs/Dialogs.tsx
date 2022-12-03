@@ -1,9 +1,9 @@
-import React, {ChangeEvent, FC, useState} from 'react';
+import React, {ChangeEvent, FC, useEffect} from 'react';
 import '../App.css';
 import d from "./Dialogs.module.css"
-import {NavLink} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {AppRootStateType} from "../redux/store";
+import {AppRootStateType, useAppSelector} from "../redux/store";
 import {addNewPostAC, addNewPostTextAC, dialogDataT, messageDataT} from "../redux/dialogs-reducer";
 
 type TDialogItem = {
@@ -35,21 +35,16 @@ export const Message: FC<TMessage> = ({value, messageId}) => {
 }
 
 export const Dialogs = () => {
-    // const dialogData = [
-    //     {id: 1, personName: "Ilya"},
-    //     {id: 2, personName: "Lesha"},
-    //     {id: 3, personName: "Dasha"},
-    //     {id: 4, personName: "Sveta"},
-    //     {id: 5, personName: "Dima"},
-    // ]
 
-    // const messageData = [
-    //     {id: 1, message: "Hello! Are u at home?"},
-    //     {id: 2, message: "I have trouble with my motivation"},
-    //     {id: 3, message: "Could u gimme advice about work?"},
-    // ]
+    let navigate = useNavigate();
+    const isAuth = useAppSelector(state => state.authReducer.isAuth)
 
-    // const [newMessage, setNewMessage] = useState('')
+    useEffect(() => {
+        if (!isAuth){
+            return navigate("/login");
+        }
+    },[isAuth]);
+
     const newMessage = useSelector<AppRootStateType, string>(
         state => state.dialogsReducer.newMessage)
 
