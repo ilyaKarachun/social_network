@@ -9,14 +9,17 @@ import {Users} from "./components/Users/Users";
 import {useDispatch, useSelector} from "react-redux";
 import {isLoading, setUsers, setUsersTotalCount} from "./redux/users-reducer";
 import {usersApi} from "./Api/users-api";
-import {AppRootStateType} from "./redux/store";
+import {AppRootStateType, useAppDispatch} from "./redux/store";
 import {Login} from "./components/Login/Login";
 import {ErrorSnackbar} from "./utils/ErrorSnackBar";
+import {authMeTC} from "./redux/auth-reducer";
+import {CircularProgress} from "@mui/material";
 
 const App = () => {
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
 
     const currentPage = useSelector<AppRootStateType, number>(state => state.usersReducer.currentPage)
+    const isInitialized = useSelector<AppRootStateType, boolean>(state => state.appReducer.isInitialized)
     const pageSize = useSelector<AppRootStateType, number>(state => state.usersReducer.pageSize)
     useEffect(() => {
         dispatch(isLoading(true))
@@ -25,7 +28,15 @@ const App = () => {
             dispatch(setUsersTotalCount(res.data.totalCount))
             dispatch(isLoading(false))
         })
+        dispatch(authMeTC())
     }, [currentPage])
+
+    if (!isInitialized) {
+        return <div
+            style={{position: 'fixed', top: '30%', textAlign: 'center', width: '100%'}}>
+            <CircularProgress/>
+        </div>
+    }
     return (
         <div className="App">
             <ErrorSnackbar/>

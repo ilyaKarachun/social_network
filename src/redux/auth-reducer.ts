@@ -1,7 +1,14 @@
 import {Dispatch} from "redux";
 import {authApi, loginDataT, usersApi} from "../Api/users-api";
-import {handleServerNetworkError} from "../utils/error-utils";
+import {handleServerAppError, handleServerNetworkError} from "../utils/error-utils";
 import {isLoading} from "./users-reducer";
+import {
+    SetAppErrorActionType,
+    SetAppInitializedActionType,
+    setAppStatusAC,
+    SetAppStatusActionType,
+    setInitializedAC
+} from "./app-reducer";
 
 const initialState: initialStateT = {
     id: null,
@@ -26,7 +33,7 @@ export const authReducer = (state = initialState, action: ActionsT): initialStat
                 isAuth: true
             }
         }
-        case "SET-LOGOUT": {
+        case "SET-LOGOUT/LOGIN": {
             return {
                 ...state,
                 isAuth: action.value
@@ -43,15 +50,37 @@ export const setUserAuthData = (email: string, id: number, login: string) => ({
     }
 } as const);
 
-export const setLogout = (value: boolean) => ({
-    type: "SET-LOGOUT", value
+export const setLogoutLogin = (value: boolean) => ({
+    type: "SET-LOGOUT/LOGIN", value
 } as const);
 
 export const setUserAuthDataTC = () => async (dispatch: Dispatch) => {
-    const res = await usersApi.authMe()
-    if (res.data.resultCode === 0) {
-        let {email, id, login} = res.data.data
-        dispatch(setUserAuthData(email, id, login))
+    try {
+        const res = await usersApi.authMe()
+        if (res.data.resultCode === 0) {
+            let {email, id, login} = res.data.data
+            dispatch(setUserAuthData(email, id, login))
+        } else {
+            handleServerAppError(res.data, dispatch);
+        }
+    } catch (error: any) {
+        handleServerNetworkError(error, dispatch)
+    }
+}
+
+export const authMeTC = () => async (dispatch: Dispatch<ActionsT>) => {
+    dispatch(setAppStatusAC('loading'))
+    try {
+        const res = await usersApi.authMe()
+        dispatch(setInitializedAC(true))
+        if (res.data.resultCode === 0) {
+            dispatch(setLogoutLogin(true))
+            dispatch(setAppStatusAC('succeeded'))
+        } else {
+            handleServerAppError(res.data, dispatch);
+        }
+    } catch (error: any) {
+        handleServerNetworkError(error, dispatch)
     }
 }
 
@@ -61,6 +90,8 @@ export const loginTC = (data: loginDataT) => async (dispatch: Dispatch) => {
         if (res.data.resultCode === 0) {
             let {email, id, login} = res.data.data
             dispatch(setUserAuthData(email, id, login))
+        } else {
+            handleServerAppError(res.data, dispatch);
         }
     } catch (error: any) {
         handleServerNetworkError(error, dispatch)
@@ -74,7 +105,9 @@ export const logoutTC = () => async (dispatch: Dispatch) => {
     try {
         const res = await authApi.logout()
         if (res.data.resultCode === 0) {
-            dispatch(setLogout(false))
+            dispatch(setLogoutLogin(false))
+        } else {
+            handleServerAppError(res.data, dispatch);
         }
     } catch (error: any) {
         handleServerNetworkError(error, dispatch)
@@ -85,5 +118,8 @@ export const logoutTC = () => async (dispatch: Dispatch) => {
 
 
 type ActionsT = ReturnType<typeof setUserAuthData> |
-        ReturnType<typeof setLogout>
+    ReturnType<typeof setLogoutLogin>
+    | SetAppErrorActionType
+    | SetAppStatusActionType
+    | SetAppInitializedActionType
 
