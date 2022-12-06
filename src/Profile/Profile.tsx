@@ -1,25 +1,37 @@
-import React, {useEffect} from 'react';
+import React, {FC, useEffect} from 'react';
 import '../App.css';
 import c from "../Content/content.module.css"
 import {MyPosts} from "./MyPosts/MyPosts";
 import {ProfileInfo} from "../components/ProfileInfo/ProfileInfo";
-import {useNavigate} from "react-router-dom";
-import {useAppSelector} from "../redux/store";
+import {Navigate, useParams} from "react-router-dom";
+import {useAppDispatch, useAppSelector} from "../redux/store";
+import {setUserStatusTC} from "../redux/profile-reducer";
 
 
-export const Profile = () => {
-    let navigate = useNavigate();
+export const Profile= () => {
     const isAuth = useAppSelector(state => state.authReducer.isAuth)
+    let userId: number | null = Number(useParams<'userId'>().userId)
+    const myUserID = useAppSelector(state => state.authReducer.id);
+
+    if (Number.isNaN(userId)) {
+        userId = myUserID;
+    }
+    const dispatch = useAppDispatch()
 
     useEffect(() => {
-        if (!isAuth){
-            return navigate("/login");
+        if (userId) {
+            dispatch(setUserStatusTC(userId));
         }
-    },[isAuth]);
+    }, [userId, dispatch]);
 
+    if (!isAuth){
+        return <Navigate to={'/login'}/>
+    }
     return <div className={c.content}>
         <ProfileInfo />
         <MyPosts/>
     </div>
 }
+
+
 

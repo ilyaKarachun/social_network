@@ -18,7 +18,7 @@ export const usersApi = {
     getUsers(currentPage: number, pageSize: number) {
         return instance.get(`users?page=${currentPage}&count=${pageSize}`)
     },
-    getUserProfile(userId: number) {
+        getUserProfile(userId: number) {
         return instance.get(`profile/${userId}`)
     },
     authMe() {
@@ -30,4 +30,14 @@ export const usersApi = {
     unfollowUser(userId: number) {
         return instance.delete(`follow/${userId}`)
     },
+}
+
+export const profileApi = {
+    getUserStatus(userId: number) {
+        return instance.get(`profile/status/${userId}`)
+    },
+    updateStatus(status: string) {
+        return instance.put(`profile/status`, {status: status})
+    },
+
 }
