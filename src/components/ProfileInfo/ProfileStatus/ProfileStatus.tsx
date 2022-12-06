@@ -24,7 +24,7 @@ export const ProfileStatus = () => {
     return (<div>
             { open ?
                 <div onDoubleClick={statusHandler}>
-                {status}
+                {status || "----"}
             </div>
             : <input
                     onChange={inputOnChangeHandler}

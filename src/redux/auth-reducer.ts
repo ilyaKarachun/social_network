@@ -1,5 +1,7 @@
 import {Dispatch} from "redux";
-import {usersApi} from "../Api/users-api";
+import {authApi, loginDataT, usersApi} from "../Api/users-api";
+import {handleServerNetworkError} from "../utils/error-utils";
+import {isLoading} from "./users-reducer";
 
 const initialState: initialStateT = {
     id: null,
@@ -24,6 +26,12 @@ export const authReducer = (state = initialState, action: ActionsT): initialStat
                 isAuth: true
             }
         }
+        case "SET-LOGOUT": {
+            return {
+                ...state,
+                isAuth: action.value
+            }
+        }
         default:
             return state
     }
@@ -35,6 +43,10 @@ export const setUserAuthData = (email: string, id: number, login: string) => ({
     }
 } as const);
 
+export const setLogout = (value: boolean) => ({
+    type: "SET-LOGOUT", value
+} as const);
+
 export const setUserAuthDataTC = () => async (dispatch: Dispatch) => {
     const res = await usersApi.authMe()
     if (res.data.resultCode === 0) {
@@ -43,5 +55,35 @@ export const setUserAuthDataTC = () => async (dispatch: Dispatch) => {
     }
 }
 
-type ActionsT = ReturnType<typeof setUserAuthData>
+export const loginTC = (data: loginDataT) => async (dispatch: Dispatch) => {
+    try {
+        const res = await authApi.login(data)
+        if (res.data.resultCode === 0) {
+            let {email, id, login} = res.data.data
+            dispatch(setUserAuthData(email, id, login))
+        }
+    } catch (error: any) {
+        handleServerNetworkError(error, dispatch)
+    } finally {
+        dispatch(isLoading(false))
+    }
+
+}
+
+export const logoutTC = () => async (dispatch: Dispatch) => {
+    try {
+        const res = await authApi.logout()
+        if (res.data.resultCode === 0) {
+            dispatch(setLogout(false))
+        }
+    } catch (error: any) {
+        handleServerNetworkError(error, dispatch)
+    } finally {
+        dispatch(isLoading(false))
+    }
+}
+
+
+type ActionsT = ReturnType<typeof setUserAuthData> |
+        ReturnType<typeof setLogout>
 

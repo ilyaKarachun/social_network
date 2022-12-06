@@ -6,12 +6,14 @@ import {AnyAction} from 'redux';
 import thunkMiddleware, {ThunkDispatch} from "redux-thunk"
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import {authReducer} from "./auth-reducer";
+import {appReducer} from "./app-reducer";
 
 const state = combineReducers({
     profileReducer,
     dialogsReducer,
     usersReducer,
-    authReducer
+    authReducer,
+    appReducer
 })
 
 export const store = legacy_createStore(state, applyMiddleware(thunkMiddleware))

@@ -4,7 +4,7 @@ import logo from "../assets/logo.jpeg"
 import h from "./Header.module.css"
 import {NavLink} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../redux/store";
-import {setUserAuthDataTC} from "../redux/auth-reducer";
+import {logoutTC, setUserAuthDataTC} from "../redux/auth-reducer";
 
 export const Header = () => {
     const dispatch = useAppDispatch()
@@ -14,10 +14,15 @@ export const Header = () => {
     const authMeHandler = () => {
         dispatch(setUserAuthDataTC())
     }
+
+    const logoutHandler = () => {
+        dispatch(logoutTC())
+    }
     return <>
         <header className={h.main}>
-            { isAuth ? <span className={h.loginMain}> {userLogin} </span> :
+            {isAuth ? <span className={h.loginMain}> {userLogin} </span> :
                 <NavLink to={"/login"} onClick={authMeHandler} className={h.loginMain}>Login</NavLink>}
+            {isAuth && <button className={h.loginMain} onClick={logoutHandler}>Log out</button>}
             <img className={h.img} src={logo}/>
         </header>
 

@@ -1,5 +1,6 @@
 import {Dispatch} from "redux";
 import {usersApi} from "../Api/users-api";
+import {handleServerAppError, handleServerNetworkError} from "../utils/error-utils";
 
 const initialState: initStateT = {
     users: [],
@@ -30,12 +31,13 @@ type initStateT = {
 
 }
 
-export const usersReducer = (state = initialState, action: ActionsT): initStateT  => {
+export const usersReducer = (state = initialState, action: ActionsT): initStateT => {
     switch (action.type) {
         case "FOLLOW-UNFOLLOW": {
             return {
                 ...state,
-                users: state.users.map((u) => u.id === action.userID ? {...u, followed: !u.followed} : u)}
+                users: state.users.map((u) => u.id === action.userID ? {...u, followed: !u.followed} : u)
+            }
         }
         case "SET-USERS": {
             return {
@@ -56,10 +58,10 @@ export const usersReducer = (state = initialState, action: ActionsT): initStateT
             }
         }
         case "SET-LOADING": {
-           return {
-               ...state,
-               loader: action.isLoading
-           }
+            return {
+                ...state,
+                loader: action.isLoading
+            }
 
         }
         default:
@@ -75,20 +77,32 @@ export const isLoading = (isLoading: boolean) => ({type: "SET-LOADING", isLoadin
 
 export const followTC = (userId: number) => async (dispatch: Dispatch) => {
     dispatch(isLoading(true))
-    const res = await usersApi.followUser(userId)
-    if (res.data.resultCode === 0) {
-        dispatch(changeFollow(userId))
+    try {
+        const res = await usersApi.followUser(userId)
+        if (res.data.resultCode === 0) {
+            dispatch(changeFollow(userId))
+        } else {
+            handleServerAppError(res.data, dispatch);
+        }
+    } catch (error: any) {
+        handleServerNetworkError(error, dispatch)
+    } finally {
+        dispatch(isLoading(false))
     }
-    dispatch(isLoading(false))
 }
 
 export const unfollowTC = (userId: number) => async (dispatch: Dispatch) => {
     dispatch(isLoading(true))
-    const res = await usersApi.unfollowUser(userId)
-    if (res.data.resultCode === 0) {
-        dispatch(changeFollow(userId))
+    try {
+        const res = await usersApi.unfollowUser(userId)
+        if (res.data.resultCode === 0) {
+            dispatch(changeFollow(userId))
+        }
+    } catch (error: any) {
+        handleServerNetworkError(error, dispatch)
+    } finally {
+        dispatch(isLoading(false))
     }
-    dispatch(isLoading(false))
 }
 
 type ActionsT = ReturnType<typeof changeFollow>

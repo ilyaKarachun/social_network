@@ -41,3 +41,19 @@ export const profileApi = {
     },
 
 }
+
+export const authApi = {
+    login(data: loginDataT) {
+        return instance.post(`auth/login`, data)
+    },
+    logout() {
+        return instance.delete(`auth/login`)
+    }
+
+}
+
+export type loginDataT = {
+    email: string
+    password: string
+    rememberMe?: boolean
+}
