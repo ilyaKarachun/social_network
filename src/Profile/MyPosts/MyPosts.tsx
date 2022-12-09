@@ -10,7 +10,7 @@ type TPostData = {
 }
 
 
-export const MyPosts = () => {
+export const MyPosts = React.memo(() => {
 
     const postData = useSelector<AppRootStateType, profileReducerT>(state => state.profileReducer)
     const dispatch = useDispatch()
@@ -38,5 +38,5 @@ export const MyPosts = () => {
             {usersPost}
         </div>
     )
-}
+})
 
